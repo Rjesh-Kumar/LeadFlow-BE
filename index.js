@@ -69,7 +69,7 @@ app.post("/agents", async (req, res) => {
   }
 });
 
-app.patch("/agents", async (req, res) => {
+app.put("/agents", async (req, res) => {
   try {
     const { id } = req.query;
     const updated = await SalesAgent.findByIdAndUpdate(id, req.body, {
@@ -145,7 +145,7 @@ app.post("/leads", async (req, res) => {
   }
 });
 
-app.patch("/leads", async (req, res) => {
+app.put("/leads", async (req, res) => {
   try {
     const { id } = req.query;
     const updated = await Lead.findByIdAndUpdate(id, req.body, { new: true });
@@ -205,6 +205,20 @@ app.post("/comments", async (req, res) => {
       commentText,
     });
     res.status(201).json(newComment);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put("/comments", async (req, res) => {
+  try {
+    const { id } = req.query;
+    const { commentText } = req.body;
+    if (!commentText) return res.status(400).json({ error: "Comment text is required" });
+
+    const updated = await Comment.findByIdAndUpdate(id, { commentText }, { new: true });
+    if (!updated) return res.status(404).json({ error: "Comment not found" });
+    res.json(updated);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
